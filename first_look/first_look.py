@@ -1,4 +1,5 @@
 # just in case we need to import data
+# .gz files do not belong in the repo.
 
 # import gzip
 # import shutil
@@ -9,14 +10,15 @@
 import pandas as pd
 import numpy as np
 
+# Text files are local and does not exist in the repo.
 trans_df = pd.read_csv('QID3530478_20180713_14000_0.txt', sep='|')
 
 trans_df.columns = [
     'Mode',
     'BusinessDate',
     'DateTime',
+    'CardID',
     'Card_Type_ID',
-    'CardType',
     'VehicleID',
     'ParentRoute',
     'RouteID',
