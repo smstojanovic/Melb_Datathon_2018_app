@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 
 # Text files are local and does not exist in the repo.
+# Will push these to S3 soon.
 trans_df = pd.read_csv('QID3530478_20180713_14000_0.txt', sep='|')
 
 trans_df.columns = [
@@ -87,11 +88,7 @@ card_types
 
 trans_df['Mode'].unique()
 
-
-
-trans_df
-
-
+# scope vehicles
 trans_df.groupby(
     'VehicleID',
     as_index=False
@@ -104,7 +101,7 @@ sort_values(
 
 # take a look at a specific vehicleID
 trans_df[
-    trans_df['VehicleID'] == 3074
+    trans_df['VehicleID'] == 3300
 ].groupby(
     'StopID',
     as_index = False
@@ -113,42 +110,29 @@ count()
 
 
 stop_locations[
-    stop_locations['StopID'] == 24310
+    stop_locations['StopID'] == 1487
 ]
 
-df[
-    df['VehicleID'] == 0
-].sort_values(
-    'DateTime'
+# making sure the data is only for the week specified.
+trans_df['BusinessDate'].unique()
+
+# Looking at some of the most common cards.
+trans_df[
+    trans_df['CardID'] == 24102330
+].sort_values('DateTime')
+
+
+trans_df.groupby(
+    'CardID',
+    as_index = False
+)\
+['DateTime'].\
+count().\
+sort_values(
+    'DateTime',
+    ascending=False
 )
 
 
-
-df['VehicleID'].nunique()
-
-df
-
-
-card_types
-
-calendar
-
-stop_locations
-
-stop_locations.columns = [
-    'StopID',
-    'street_name',
-    'street_corner',
-    'location_type',
-    'suburb',
-    'postcode',
-    'city',
-    'region',
-    'region_type',
-    'lat',
-    'lng'
-]
-
-df
-
+# looking at different "Cities"
 stop_locations['city'].unique()
