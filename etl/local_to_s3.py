@@ -116,6 +116,9 @@ def Log_ETL(file_directory, message):
 
 
 def File_ETL_Main(s3, file_directory):
+    """
+        Main ETL Code broken down into components
+    """
     try:
         # ETL
         file = Extract_File(file_directory)
@@ -129,7 +132,10 @@ def File_ETL_Main(s3, file_directory):
 
 
 def Load_All_Transactions_To_S3(s3, base_dir):
-
+    """
+        Script to loop through all files in the directories
+        and perform ETL task for each.
+    """
     years = os.listdir(base_dir)
     for year in years:
         # DEBUG
