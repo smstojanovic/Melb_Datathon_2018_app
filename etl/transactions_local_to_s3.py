@@ -15,7 +15,17 @@ session = boto3.Session(profile_name='admin')
 s3 = session.client('s3',region_name='ap-southeast-2')
 
 # relevant for my file directory.
-base_dir = '..\..\Data\Datathon\MelbDatathon2018\Samp_1\ScanOnTransaction'
+# base_dir = '..\..\Data\Datathon\MelbDatathon2018\Samp_1\ScanOnTransaction'
+
+# relevant for my file directory.
+#base_dir = 'F:\MelbDatathon2018\Samp_1\ScanOffTransaction'
+
+base_dirs = [
+    'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
+    'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
+    'F:\MelbDatathon2018\Samp_1\ScanOnTransaction',
+    'F:\MelbDatathon2018\Samp_1\ScanOnTransaction',
+]
 
 # Functions
 
@@ -172,10 +182,11 @@ def Load_All_Transactions_To_S3(s3, base_dir):
                         filename
                     )
 
-                    File_ETL_Main(s3, file_directory)
+                    File_ETL_Main(s3, file_directory, year, week)
 
 
 if __name__ == "__main__":
-    Load_All_Transactions_To_S3(s3, base_dir)
+    for base_dir in base_dirs:
+        Load_All_Transactions_To_S3(s3, base_dir)
 
                 # file_directory
