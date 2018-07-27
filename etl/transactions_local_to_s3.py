@@ -15,14 +15,8 @@ session = boto3.Session(profile_name='admin')
 s3 = session.client('s3',region_name='ap-southeast-2')
 
 # relevant for my file directory.
-base_dir = 'F:\MelbDatathon2018\Samp_1\ScanOffTransaction'
+base_dir = '..\..\Data\Datathon\MelbDatathon2018\Samp_1\ScanOnTransaction'
 
-# base_dirs = [
-#     'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
-#     'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
-# ]
-#QID3530815_20180713_20515_0.txt
-#QID3530815_20180713_20515_0.txt
 # Functions
 
 def Write_To_S3(s3, data, filename):
@@ -38,7 +32,8 @@ def Write_To_S3(s3, data, filename):
 
 def Extract_File(file_directory):
     """ This function takes a file directory from the datathon
-        transactions and unzips it in its local directory
+        transactions and unzips it in its local directory. Returns key
+        parameters used throughout the procedure.
     """
 
     with gzip.open(file_directory, 'rb') as f_in:
@@ -50,9 +45,21 @@ def Extract_File(file_directory):
             #extract file to disk.
             shutil.copyfileobj(f_in, f_out)
 
-    return file
+    scan_type = re.findall(
+        pattern="Scan(On|Off)Transaction",
+        string=file
+    )[0]
 
-def Transform_Data(file):
+    sample = re.findall(
+        pattern="Samp_(\d)",
+        string=file
+    )[0]
+
+    return file, scan_type, sample
+
+
+
+def Transform_Data(file, scan_type):
     """ After Extract_File has been run, This function loads the data
         in memory, runs some transformations and writes it into a
         parquet file
@@ -61,7 +68,7 @@ def Transform_Data(file):
     # read file - and transform data.
     df = pd.read_csv(file, sep="|", header=None)
     df = map_transaction_columns(df)
-    df['Scan_Type'] = "On"
+    df['Scan_Type'] = scan_type
 
     # send to parquet
     parquet_file = re.findall(
@@ -73,7 +80,7 @@ def Transform_Data(file):
 
     return parquet_file
 
-def Load_File(s3, parquet_file):
+def Load_File(s3, parquet_file, year, week, sample):
     """ After Transform_Data has been run, this function takes the parquet
         file and loads it into S3, ready for our Athena Table.
     """
@@ -83,18 +90,14 @@ def Load_File(s3, parquet_file):
 
     # preparing the filename for S3 / Athena, doing some chained regex.
     s3_file = re.findall(
-        r"(?<=MelbDatathon2018\\).*",
+        r"Week\d*\\(.*)",
         parquet_file
-    )[0].replace("\\","/")
+    )[0].replace(".parquet","_%s.parquet" % str(sample))
 
-    s3_file = re.sub(
-        pattern="Samp_\d",
-        repl="Transactions",
-        string = re.sub(
-            pattern="Scan(On|Off)Transaction/",
-            repl="",
-            string = s3_file
-        )
+    s3_file = "Transactions/Year=%i/Week=%i/%s" % (
+        int(year),
+        int(week.replace("Week","")),
+        s3_file
     )
 
     Write_To_S3(s3, data, s3_file)
@@ -121,15 +124,16 @@ def Log_ETL(file_directory, message):
         )
 
 
-def File_ETL_Main(s3, file_directory):
+def File_ETL_Main(s3, file_directory, year, week):
     """
         Main ETL Code broken down into components
     """
     try:
         # ETL
-        file = Extract_File(file_directory)
-        parquet_file = Transform_Data(file)
-        Load_File(s3, parquet_file)
+        file_directory
+        file, scan_type, sample = Extract_File(file_directory)
+        parquet_file = Transform_Data(file, scan_type)
+        Load_File(s3, parquet_file, year, week, sample)
         Clean_Files(file, parquet_file)
         # Log Success
         Log_ETL(file_directory,'success')
