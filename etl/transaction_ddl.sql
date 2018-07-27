@@ -18,7 +18,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS default.Datathon_Transactions (
 ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
 WITH SERDEPROPERTIES (
   'serialization.format' = '1'
-) LOCATION 's3://ap-southeast-2/stevan-melbourne-datathon/Transactions/'
+) LOCATION 's3://stevan-melbourne-datathon/Transactions/'
 TBLPROPERTIES ('has_encrypted_data'='false');
 
 
