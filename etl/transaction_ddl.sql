@@ -11,7 +11,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS default.Datathon_Transactions (
   `Scan_Type` string
 ) PARTITIONED BY (
   Year int,
-  Week string
+  Week int
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
 WITH SERDEPROPERTIES (
