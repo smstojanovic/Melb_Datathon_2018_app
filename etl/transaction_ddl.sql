@@ -1,7 +1,7 @@
 DROP TABLE default.Datathon_Transactions
 
 CREATE EXTERNAL TABLE IF NOT EXISTS default.Datathon_Transactions (
-  `Mode` string,
+  `Mode` int,
   `BusinessDate` string,
   `DateTime` string,
   `CardID` bigint,
@@ -22,8 +22,10 @@ WITH SERDEPROPERTIES (
 TBLPROPERTIES ('has_encrypted_data'='false');
 
 
+-- example of adding partitions to table.
 ALTER TABLE default.datathon_transactions ADD
-    PARTITION (year=2016, week=8) LOCATION 's3://stevan-melbourne-datathon/Transactions/Year=2018/Week=8/'
+    PARTITION (year=2015, week=29) LOCATION 's3://stevan-melbourne-datathon/Transactions/Year=2015/Week=29/'
+    PARTITION (year=2015, week=30) LOCATION 's3://stevan-melbourne-datathon/Transactions/Year=2015/Week=30/'
 
 select *
 from default.Datathon_Transactions
