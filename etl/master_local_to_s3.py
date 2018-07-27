@@ -15,8 +15,19 @@ session = boto3.Session(profile_name='admin')
 s3 = session.client('s3',region_name='ap-southeast-2')
 
 # relevant for my file directory.
+<<<<<<< HEAD:etl/local_to_s3.py
+base_dir = 'F:\MelbDatathon2018\Samp_1\ScanOffTransaction'
+
+# base_dirs = [
+#     'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
+#     'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
+# ]
+#QID3530815_20180713_20515_0.txt
+#QID3530815_20180713_20515_0.txt
+=======
 base_dir = '..\..\Data\Datathon\MelbDatathon2018'
 
+>>>>>>> 7b8b7a625de2c7cd5fb56b491679c633c77c29ff:etl/master_local_to_s3.py
 # Functions
 
 def Write_To_S3(s3, data, filename):
