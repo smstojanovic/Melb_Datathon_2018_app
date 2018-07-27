@@ -15,7 +15,7 @@ session = boto3.Session(profile_name='admin')
 s3 = session.client('s3',region_name='ap-southeast-2')
 
 # relevant for my file directory.
-base_dir = '..\..\Data\Datathon\MelbDatathon2018\Samp_1\ScanOnTransaction'
+base_dir = '..\..\Data\Datathon\MelbDatathon2018'
 
 # Functions
 
@@ -35,18 +35,14 @@ def Extract_File(file_directory):
         transactions and unzips it in its local directory
     """
 
-    with gzip.open(file_directory, 'rb') as f_in:
-        file = re.findall(
-            pattern="(.*)\.gz",
-            string=file_directory
-        )[0]
-        with open(file, 'wb') as f_out:
-            #extract file to disk.
-            shutil.copyfileobj(f_in, f_out)
+    file = re.findall(
+        pattern="(.*)\.txt",
+        string=file_directory
+    )[0]
 
     return file
 
-def Transform_Data(file):
+def Transform_Data(file, file_type):
     """ After Extract_File has been run, This function loads the data
         in memory, runs some transformations and writes it into a
         parquet file
@@ -54,8 +50,7 @@ def Transform_Data(file):
 
     # read file - and transform data.
     df = pd.read_csv(file, sep="|", header=None)
-    df = map_transaction_columns(df)
-    df['Scan_Type'] = "On"
+    df = map_master_columns(df, file_type)
 
     # send to parquet
     parquet_file = re.findall(
@@ -115,14 +110,14 @@ def Log_ETL(file_directory, message):
         )
 
 
-def File_ETL_Main(s3, file_directory):
+def File_ETL_Main(s3, file_directory, file_type):
     """
         Main ETL Code broken down into components
     """
     try:
         # ETL
         file = Extract_File(file_directory)
-        parquet_file = Transform_Data(file)
+        parquet_file = Transform_Data(file, file_type)
         Load_File(s3, parquet_file)
         Clean_Files(file, parquet_file)
         # Log Success
