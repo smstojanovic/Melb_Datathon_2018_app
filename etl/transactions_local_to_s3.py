@@ -21,10 +21,8 @@ s3 = session.client('s3',region_name='ap-southeast-2')
 #base_dir = 'F:\MelbDatathon2018\Samp_1\ScanOffTransaction'
 
 base_dirs = [
-    'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
-    'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
-    'F:\MelbDatathon2018\Samp_1\ScanOnTransaction',
-    'F:\MelbDatathon2018\Samp_1\ScanOnTransaction',
+    'F:\MelbDatathon2018\Samp_0\ScanOffTransaction',
+    'F:\MelbDatathon2018\Samp_1\ScanOffTransaction',
 ]
 
 # Functions
