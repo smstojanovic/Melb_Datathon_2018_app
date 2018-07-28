@@ -6,7 +6,7 @@ import shutil
 from tqdm import tqdm # want to see progress
 import re
 import boto3
-from file_map import map_transaction_columns
+from file_map import map_transaction_columns, map_master_columns
 from io import BytesIO
 import json
 
@@ -15,8 +15,7 @@ session = boto3.Session(profile_name='admin')
 s3 = session.client('s3',region_name='ap-southeast-2')
 
 # relevant for my file directory.
-<<<<<<< HEAD:etl/local_to_s3.py
-base_dir = 'F:\MelbDatathon2018\Samp_1\ScanOffTransaction'
+#base_dir = 'F:\MelbDatathon2018\Samp_1\ScanOffTransaction'
 
 # base_dirs = [
 #     'F:\MelbDatathon2018\Samp_0\ScanOnTransaction',
@@ -24,10 +23,10 @@ base_dir = 'F:\MelbDatathon2018\Samp_1\ScanOffTransaction'
 # ]
 #QID3530815_20180713_20515_0.txt
 #QID3530815_20180713_20515_0.txt
-=======
+#=======
 base_dir = '..\..\Data\Datathon\MelbDatathon2018'
 
->>>>>>> 7b8b7a625de2c7cd5fb56b491679c633c77c29ff:etl/master_local_to_s3.py
+#>>>>>>> 7b8b7a625de2c7cd5fb56b491679c633c77c29ff:etl/master_local_to_s3.py
 # Functions
 
 def Write_To_S3(s3, data, filename):
@@ -82,20 +81,11 @@ def Load_File(s3, parquet_file):
         data = f.read()
 
     # preparing the filename for S3 / Athena, doing some chained regex.
+
     s3_file = re.findall(
         r"(?<=MelbDatathon2018\\).*",
         parquet_file
     )[0].replace("\\","/")
-
-    s3_file = re.sub(
-        pattern="Samp_\d",
-        repl="Transactions",
-        string = re.sub(
-            pattern="Scan(On|Off)Transaction/",
-            repl="",
-            string = s3_file
-        )
-    )
 
     Write_To_S3(s3, data, s3_file)
 
@@ -120,6 +110,11 @@ def Log_ETL(file_directory, message):
             )
         )
 
+s3
+file_directory = '..\..\Data\Datathon\MelbDatathon2018\card_types.txt'
+file_type = "card_types"
+
+File_ETL_Main(s3, file_directory, file_type)
 
 def File_ETL_Main(s3, file_directory, file_type):
     """
@@ -127,8 +122,8 @@ def File_ETL_Main(s3, file_directory, file_type):
     """
     try:
         # ETL
-        file = Extract_File(file_directory)
-        parquet_file = Transform_Data(file, file_type)
+        #file = Extract_File(file_directory)
+        parquet_file = Transform_Data(file_directory, file_type)
         Load_File(s3, parquet_file)
         Clean_Files(file, parquet_file)
         # Log Success
