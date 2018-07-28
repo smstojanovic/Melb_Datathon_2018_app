@@ -41,6 +41,8 @@ def map_master_columns(master_df, file_type):
             'Week_Ending',
             'Quarter'
         ]
+        master_df['YYYYQQ'] = master_df['YYYYQQ'].map(str)
+
     if file_type == "stop_locations":
         master_df.columns = [
             'StopID',

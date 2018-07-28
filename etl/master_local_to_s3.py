@@ -59,8 +59,10 @@ def Transform_Data(file, file_type):
     """
 
     # read file - and transform data.
-    df = pd.read_csv(file, sep="|", header=None)
+    df = pd.read_csv(file_directory, sep="|", header=None)
     df = map_master_columns(df, file_type)
+
+    df.iloc[:,4:22]
 
     # send to parquet
     parquet_file = re.findall(
@@ -95,7 +97,7 @@ def Clean_Files(file, parquet_file):
         Just cleans up the files in the ETL procedure
     """
     # clean-up
-    os.remove(file)
+    #os.remove(file)
     os.remove(parquet_file)
 
 
@@ -111,10 +113,7 @@ def Log_ETL(file_directory, message):
         )
 
 s3
-file_directory = '..\..\Data\Datathon\MelbDatathon2018\card_types.txt'
-file_type = "card_types"
 
-File_ETL_Main(s3, file_directory, file_type)
 
 def File_ETL_Main(s3, file_directory, file_type):
     """
@@ -125,48 +124,17 @@ def File_ETL_Main(s3, file_directory, file_type):
         #file = Extract_File(file_directory)
         parquet_file = Transform_Data(file_directory, file_type)
         Load_File(s3, parquet_file)
-        Clean_Files(file, parquet_file)
+        Clean_Files(file_directory, parquet_file)
         # Log Success
         Log_ETL(file_directory,'success')
     except Exception as e:
         Log_ETL(file_directory,str(e))
 
 
-def Load_All_Transactions_To_S3(s3, base_dir):
-    """
-        Script to loop through all files in the directories
-        and perform ETL task for each.
-    """
-    years = os.listdir(base_dir)
-    for year in years:
-        # DEBUG
-        # year = years[-1]
-
-        weeks = os.listdir(base_dir+r'\%s' % year)
-        for week in tqdm(weeks):
-            # DEBUG
-            # week = weeks[-2]
-
-            files = os.listdir(
-                        base_dir+r'\%s\%s' % (
-                            year,
-                            week
-                        )
-            )
-
-            for filename in files:
-                    # DEBUG
-                    # filename = files[0]
-                    file_directory = base_dir+r'\%s\%s\%s' % (
-                        year,
-                        week,
-                        filename
-                    )
-
-                    File_ETL_Main(s3, file_directory)
-
 
 if __name__ == "__main__":
-    Load_All_Transactions_To_S3(s3, base_dir)
+    file_directory = '..\..\Data\Datathon\MelbDatathon2018\calendar.txt'
+    file_type = "calendar"
+    File_ETL_Main(s3, base_dir, file_type)
 
                 # file_directory
