@@ -5,8 +5,14 @@ import sys
 sys.path.append('../py_libs')
 import athenapy
 
+qry = athenapy.get_possible_touch_pairs_query()
+
 df = athenapy.query("""
     SELECT *
     FROM default.datathon_transactions
     limit 100;
 """)
+
+df = athenapy.query(qry)
+
+df
